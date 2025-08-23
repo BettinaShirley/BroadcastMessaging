@@ -16,6 +16,48 @@ client.on('qr', qr => {
     console.log('Scan QR code with your WhatsApp.');
 });
 
+async function getGroupIdByName(name) {
+    const chats = await client.getChats();
+    const group = chats.find(c => c.isGroup && c.name === name);
+    if (group) return group.id._serialized;
+    console.error(`Group "${name}" not found!`);
+    return null;
+}
+
+function formatNumber(number) {
+    if (number.includes('@c.us') || number.includes('@g.us')) return number;
+    return `${number.replace(/\D/g, '')}@c.us`;
+}
+
+async function sendMessage(target, text) {
+    if (!clientReady) {
+        console.log('Client not ready yet, waiting 5 seconds...');
+        await new Promise(resolve => setTimeout(resolve, 5000));
+    }
+    const chatId = formatNumber(target);
+    try {
+        await client.sendMessage(chatId, text);
+        console.log(`Text message sent to ${target}`);
+    } catch (err) {
+        console.error('Error sending text:', err);
+    }
+}
+
+async function sendImage(target, imagePath, caption = '') {
+    if (!clientReady) {
+        console.log('Client not ready yet, waiting 5 seconds...');
+        await new Promise(resolve => setTimeout(resolve, 5000));
+    }
+    const chatId = formatNumber(target);
+    try {
+        const media = MessageMedia.fromFilePath(imagePath);
+        await client.sendMessage(chatId, media, { caption });
+        console.log(`Image sent to ${target}`);
+    } catch (err) {
+        console.error('Error sending image:', err);
+    }
+}
+
 client.on('ready', async () => {
     console.log('WhatsApp client is ready!');
     console.log('Waiting 10 seconds to allow you to close dialog boxes...');
@@ -24,41 +66,29 @@ client.on('ready', async () => {
     clientReady = true;
     console.log('Client is now fully ready.');
 
-    sendMessage(process.env.TEST_NUMBER, 'Hello! WhatsApp client is working.');
-    sendImage(process.env.TEST_NUMBER, "image.jpg", "hehe");
+    const phoneNumbers = Object.keys(process.env)
+        .filter(key => key.startsWith('PHONE_'))
+        .map(key => process.env[key]);
+
+    const groupNames = Object.keys(process.env)
+        .filter(key => key.startsWith('GROUP_'))
+        .map(key => process.env[key]);
+
+    const targets = [...phoneNumbers];
+
+    for (const groupName of groupNames) {
+        const groupId = await getGroupIdByName(groupName);
+        if (groupId) targets.push(groupId);
+    }
+
+    for (const target of targets) {
+        await sendMessage(target, 'Good Morning!');
+        await sendImage(target, 'image1.jpg', '1');
+        await new Promise(resolve => setTimeout(resolve, 2000));
+        await sendImage(target, 'image2.jpg', '2');
+        await new Promise(resolve => setTimeout(resolve, 2000));
+        await sendImage(target, 'image3.jpg', '3');
+    }
 });
-
-function formatNumber(number) {
-    return number.includes('@c.us') ? number : `${number.replace(/\D/g, '')}@c.us`;
-}
-
-async function sendMessage(phoneNumber, text) {
-    if (!clientReady) {
-        console.log('Client not ready yet, waiting 5 seconds...');
-        await new Promise(resolve => setTimeout(resolve, 5000));
-    }
-    const chatId = formatNumber(phoneNumber);
-    try {
-        await client.sendMessage(chatId, text);
-        console.log(`Text message sent to ${phoneNumber}`);
-    } catch (err) {
-        console.error('Error sending text:', err);
-    }
-}
-
-async function sendImage(phoneNumber, imagePath, caption = '') {
-    if (!clientReady) {
-        console.log('Client not ready yet, waiting 5 seconds...');
-        await new Promise(resolve => setTimeout(resolve, 5000));
-    }
-    const chatId = formatNumber(phoneNumber);
-    try {
-        const media = MessageMedia.fromFilePath(imagePath);
-        await client.sendMessage(chatId, media, { caption });
-        console.log(`Image sent to ${phoneNumber}`);
-    } catch (err) {
-        console.error('Error sending image:', err);
-    }
-}
 
 module.exports = { sendMessage, sendImage, client };
