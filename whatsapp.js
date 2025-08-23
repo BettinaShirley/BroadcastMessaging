@@ -24,8 +24,18 @@ client.on('ready', async () => {
     clientReady = true;
     console.log('Client is now fully ready.');
 
-    sendMessage(process.env.TEST_NUMBER, 'Hello! WhatsApp client is working.');
-    sendImage(process.env.TEST_NUMBER, "image.jpg", "hehe");
+    const testNumbers = Object.keys(process.env)
+        .filter(key => key.startsWith('PHONE_NUM'))
+        .map(key => process.env[key]);
+
+    for (const number of testNumbers) {
+        sendMessage(number, 'Good Morning!');
+        sendImage(number, "image1.jpg", "1");
+        await new Promise(resolve => setTimeout(resolve, 5000));
+        sendImage(number, "image2.jpg", "2");
+        await new Promise(resolve => setTimeout(resolve, 5000));
+        sendImage(number, "image3.jpg", "3");
+    }
 });
 
 function formatNumber(number) {
