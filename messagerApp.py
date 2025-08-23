@@ -8,36 +8,46 @@ from webdriver_manager.chrome import ChromeDriverManager
 import os
 import time
 
-driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()))
+def setUpDriver():
+    driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()))
+    driver.get("https://web.whatsapp.com/")
+    print("Scan the QR code with your phone to log in...")
+    time.sleep(20)
+    wait = WebDriverWait(driver, 60) 
+    return driver, wait
 
-driver.get("https://web.whatsapp.com/")
-input("Scan the QR code with your phone to log in...Press ENTER after login into Whatsapp Web and your chats are visible.")
+def selectChat(driver, contact_name):
+    search_box = driver.find_element(By.XPATH, '//div[@contenteditable="true"][@data-tab="3" or @data-tab="4"]')
+    search_box.click()
+    search_box.send_keys(contact_name)
+    time.sleep(2)
 
-contact_name = "Mommy❤️❤️" #Mom
-message = "Hello, this is an automated message!"
+    person = driver.find_element(By.XPATH, f'//span[@title="{contact_name}"]')
+    person.click()
+    time.sleep(2)
 
-wait = WebDriverWait(driver, 60)  # wait up to 60s for elements
-search_box = wait.until(
-    EC.presence_of_element_located((By.XPATH, '//div[@contenteditable="true"][@data-tab="3" or @data-tab="4"]'))
-)
-search_box.click()
-search_box.send_keys(contact_name)
-time.sleep(2)
 
-person = driver.find_element(By.XPATH, f'//span[@title="{contact_name}"]')
-person.click()
-time.sleep(2)
+def sendMessage(wait,message):
+    message_box = wait.until(
+        EC.presence_of_element_located((By.XPATH, '//div[@contenteditable="true"][@aria-placeholder="Type a message"]'))
+    )
+    message_box.click()
+    message_box.send_keys(message + Keys.ENTER)
+    print('Message sent successfully!')
 
-message_box = wait.until(
-    EC.presence_of_element_located((By.XPATH, '//div[@contenteditable="true"][@aria-placeholder="Type a message"]'))
-)
+def run():
+    driver, wait = setUpDriver()
+    personName = 'Mom'
+    selectChat(driver, personName)
+    sendMessage(wait, f'Hello {personName} This is a test message from my automation script.')
 
-message_box.click()
-message_box.send_keys(message + Keys.ENTER)
+file_path = os.path.abspath("sampleImage.jpeg") 
 
-print("Message sent successfully!")
-
-file_path = os.path.abspath("drumming.png") #sampleImage.jpeg
+attach_button = wait.until(
+        EC.presence_of_element_located((By.XPATH, '//div[@title="Attach"]'))
+    )
+attach_button.click()
+attach_button.click()
 
 file_input = wait.until(
     EC.presence_of_element_located((By.CSS_SELECTOR, 'input[type="file"]'))
