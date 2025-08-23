@@ -8,7 +8,6 @@ from webdriver_manager.chrome import ChromeDriverManager
 import os
 import time
 
-
 def setUpDriver():
     driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()))
     driver.get("https://web.whatsapp.com/")
@@ -55,10 +54,9 @@ file_input = wait.until(
 )
 file_input.send_keys(file_path)
 
-
 send_button = wait.until(
     EC.element_to_be_clickable((By.XPATH, '//span[@data-icon="send"]'))
 )
 send_button.click()
 
-print("Image sent successfully!")
+print("Image sent successfully (without touching the paperclip)!")
