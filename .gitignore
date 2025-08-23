@@ -1,0 +1,6 @@
+PyWhatKit_DB.txt
+node_modules
+venv
+.wwebjs*
+.env
+image.jpg
