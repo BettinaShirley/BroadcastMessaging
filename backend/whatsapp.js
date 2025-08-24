@@ -83,10 +83,17 @@ client.on('ready', async () => {
 
     for (const target of targets) {
         await sendMessage(target, 'Good Morning!');
+    }
+
+    for (const target of targets) {
         await sendImage(target, 'image1.jpg', '1');
-        await new Promise(resolve => setTimeout(resolve, 2000));
+    }
+
+    for (const target of targets) {
         await sendImage(target, 'image2.jpg', '2');
-        await new Promise(resolve => setTimeout(resolve, 2000));
+    }
+
+    for (const target of targets) {
         await sendImage(target, 'image3.jpg', '3');
     }
 });

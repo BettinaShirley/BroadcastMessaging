@@ -6,3 +6,4 @@ venv
 image*
 uploads/*
 sampleImage*
+.DS_Store
