@@ -5,5 +5,6 @@ venv
 .env
 image*
 uploads/*
-sampleImage*
+/images*
+/data*
 .DS_Store
