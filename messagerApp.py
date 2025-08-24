@@ -7,10 +7,13 @@ from selenium.webdriver.support import expected_conditions as EC
 from webdriver_manager.chrome import ChromeDriverManager
 import os
 import time
+from selenium.webdriver.chrome.options import Options
 
 
-def setUpDriver():
-    driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()))
+def setUp():
+    options = webdriver.ChromeOptions()
+    #options.debugger_address = "127.0.0.1:9222"   # attach to running Chrome
+    driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()),options=options)
     driver.get("https://web.whatsapp.com/")
     print("Scan the QR code with your phone to log in...")
     time.sleep(20)
@@ -36,29 +39,30 @@ def sendMessage(wait,message):
     message_box.send_keys(message + Keys.ENTER)
     print('Message sent successfully!')
 
+def attachImage(wait):
+    file_path = os.path.abspath("sampleImage.jpeg") 
+    attach_button = wait.until(
+        EC.element_to_be_clickable((By.XPATH, '//div[@role="button"][@aria-label="Attach"]'))
+    )
+    attach_button.click()
+    file_input = wait.until(
+        EC.presence_of_element_located((By.CSS_SELECTOR, 'input[type="file"]'))
+    )
+    file_input.send_keys(file_path)
+    send_button = wait.until(
+        EC.element_to_be_clickable((By.XPATH, '//span[@data-icon="send"]'))
+    )
+    send_button.click()
+    print("Image sent successfully!")
+
 def run():
-    driver, wait = setUpDriver()
+    testSetUp()
+    driver, wait = setUp()
     personName = 'Mom'
     selectChat(driver, personName)
     sendMessage(wait, f'Hello {personName} This is a test message from my automation script.')
+    attachImage(wait)
 
-file_path = os.path.abspath("sampleImage.jpeg") 
-
-attach_button = wait.until(
-        EC.presence_of_element_located((By.XPATH, '//div[@title="Attach"]'))
-    )
-attach_button.click()
-attach_button.click()
-
-file_input = wait.until(
-    EC.presence_of_element_located((By.CSS_SELECTOR, 'input[type="file"]'))
-)
-file_input.send_keys(file_path)
+run()
 
 
-send_button = wait.until(
-    EC.element_to_be_clickable((By.XPATH, '//span[@data-icon="send"]'))
-)
-send_button.click()
-
-print("Image sent successfully!")
