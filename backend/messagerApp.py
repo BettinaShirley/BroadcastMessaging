@@ -10,10 +10,8 @@ import time
 from selenium.webdriver.chrome.options import Options
 
 
-def setUp():
-    options = webdriver.ChromeOptions()
-    #options.debugger_address = "127.0.0.1:9222"   # attach to running Chrome
-    driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()),options=options)
+def setUpDriver():
+    driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()))
     driver.get("https://web.whatsapp.com/")
     print("Scan the QR code with your phone to log in...")
     time.sleep(20)
@@ -56,8 +54,7 @@ def attachImage(wait):
     print("Image sent successfully!")
 
 def run():
-    testSetUp()
-    driver, wait = setUp()
+    driver, wait = setUpDriver()
     personName = 'Mom'
     selectChat(driver, personName)
     sendMessage(wait, f'Hello {personName} This is a test message from my automation script.')
