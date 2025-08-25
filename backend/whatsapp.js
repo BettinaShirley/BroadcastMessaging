@@ -1,8 +1,11 @@
 require('dotenv').config();
 const { Client, LocalAuth, MessageMedia } = require('whatsapp-web.js');
 const qrcode = require('qrcode-terminal');
+const fs = require('fs');
+const csv = require('csv-parser');
 
 let clientReady = false;
+let phoneNumbers = [];
 
 const client = new Client({
     authStrategy: new LocalAuth(),
@@ -58,6 +61,41 @@ async function sendImage(target, imagePath, caption = '') {
     }
 }
 
+function loadContactsFromCSV(filePath) {
+    return new Promise((resolve, reject) => {
+        const phones = [];
+
+        fs.createReadStream(filePath)
+            .pipe(csv({ headers: ['contactNo', 'name'], skipLines: 1 }))
+            .on('data', (row) => {
+                if (row.contactNo && row.contactNo.trim() !== '') {
+                    phones.push(row.contactNo.trim());
+                }
+            })
+            .on('end', () => {
+                resolve(phones);
+            })
+            .on('error', reject);
+    });
+}
+
+function loadGroupsFromCSV(filePath) {
+    return new Promise((resolve, reject) => {
+        const groups = [];
+
+        fs.createReadStream(filePath)
+            .pipe(csv({ headers: ['groupName'], skipLines: 1 }))
+            .on('data', (row) => {
+                if (row.groupName && row.groupName.trim() !== '') {
+                    groups.push(row.groupName.trim());
+                }
+            })
+            .on('end', () => {
+                resolve(groups);
+            })
+            .on('error', reject);
+    });
+}
 client.on('ready', async () => {
     console.log('WhatsApp client is ready!');
     console.log('Waiting 10 seconds to allow you to close dialog boxes...');
@@ -66,13 +104,9 @@ client.on('ready', async () => {
     clientReady = true;
     console.log('Client is now fully ready.');
 
-    const phoneNumbers = Object.keys(process.env)
-        .filter(key => key.startsWith('PHONE_'))
-        .map(key => process.env[key]);
+    const phoneNumbers = await loadContactsFromCSV('data/individuals.csv');
 
-    const groupNames = Object.keys(process.env)
-        .filter(key => key.startsWith('GROUP_'))
-        .map(key => process.env[key]);
+    const groupNames = await loadGroupsFromCSV('data/groups.csv');
 
     const targets = [...phoneNumbers];
 
@@ -83,9 +117,9 @@ client.on('ready', async () => {
 
     for (const target of targets) {
         await sendMessage(target, 'Good Morning!');
-        await sendImage(target, 'images/sampleImage.jpeg', '1');
-        await sendImage(target, 'images/sampleImage.jpeg', '2');
-        await sendImage(target, 'images/sampleImage.jpeg', '3');
+        await sendImage(target, 'images/image1.jpeg', '1');
+        await sendImage(target, 'images/image2.jpeg', '2');
+        await sendImage(target, 'images/image3.jpeg', '3');
     }
 });
 
