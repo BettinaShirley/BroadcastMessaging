@@ -34,9 +34,9 @@ client.on('ready', async () => {
         const csvContent = csvLines.map(row => row.join(',')).join('\n');
 
         fs.writeFileSync(outputPath, csvContent);
-        console.log(`✅ Chats written to ${outputPath}`);
+        console.log(`Chats written to ${outputPath}`);
     } catch (err) {
-        console.error('❌ Error fetching or writing chats:', err);
+        console.error('Error fetching or writing chats:', err);
     } finally {
         client.destroy();
     }
