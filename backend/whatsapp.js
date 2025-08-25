@@ -87,7 +87,7 @@ function loadGroupsFromCSV(filePath) {
             .pipe(csv({ headers: ['groupName'], skipLines: 1 }))
             .on('data', (row) => {
                 if (row.groupName && row.groupName.trim() !== '') {
-                    groups.push(row.groupName.trim());
+                    groups.push(row.groupName);
                 }
             })
             .on('end', () => {
@@ -105,8 +105,10 @@ client.on('ready', async () => {
     console.log('Client is now fully ready.');
 
     const phoneNumbers = await loadContactsFromCSV('data/individuals.csv');
+    console.log('Phone numbers loaded:', phoneNumbers);
 
     const groupNames = await loadGroupsFromCSV('data/groups.csv');
+    console.log('Group names loaded:', groupNames);
 
     const targets = [...phoneNumbers];
 
@@ -114,13 +116,25 @@ client.on('ready', async () => {
         const groupId = await getGroupIdByName(groupName);
         if (groupId) targets.push(groupId);
     }
+    console.log('All targets:', targets);
 
     for (const target of targets) {
         await sendMessage(target, 'Good Morning!');
+    }
+
+    for (const target of targets) {
         await sendImage(target, 'images/image1.jpeg', '1');
+    }
+
+    for (const target of targets) {
         await sendImage(target, 'images/image2.jpeg', '2');
+    }
+
+    for (const target of targets) {
         await sendImage(target, 'images/image3.jpeg', '3');
     }
 });
+
+client.destroy();
 
 module.exports = { sendMessage, sendImage, client };
