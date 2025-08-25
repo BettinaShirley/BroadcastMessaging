@@ -133,8 +133,8 @@ client.on('ready', async () => {
     for (const target of targets) {
         await sendImage(target, 'images/image3.jpeg', '3');
     }
-});
+    client.destroy();
 
-client.destroy();
+});
 
 module.exports = { sendMessage, sendImage, client };

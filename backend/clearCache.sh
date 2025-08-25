@@ -1,4 +1,4 @@
 #!/bin/bash
 
-cd backend
-rm -rf .wwebjs*
+# cd backend
+# rm -rf .wwebjs*
