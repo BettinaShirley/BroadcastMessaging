@@ -14,7 +14,11 @@ def cleanup():
 
 def run_backend():
     subprocess.Popen(['node', 'whatsapp.js'], cwd='backend')
-    print("Backend started")
+    print("WhatsApp backend started")
+
+def run_server():
+    subprocess.Popen(['node', 'server.js'], cwd='backend')
+    print("Express server started")
 
 def run_frontend():
     subprocess.Popen(['npm', 'run', 'dev', '--', '--host'], cwd='frontend')
@@ -25,12 +29,16 @@ def main():
 
     cleanup()
 
+    # Start Express server
+    threading.Thread(target=run_server).start()
+    time.sleep(2)
+
     # Start Frontend
     threading.Thread(target=run_frontend).start()
     time.sleep(3)
 
-    # Start Backend
-    run_backend()
+    # Remove the automatic start of WhatsApp backend
+    # run_backend()
 
 if __name__ == "__main__":
     main()
