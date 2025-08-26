@@ -4,7 +4,6 @@ const fs = require('fs');
 const csv = require('csv-parser');
 
 let clientReady = false;
-let phoneNumbers = [];
 
 const client = new Client({
     authStrategy: new LocalAuth(),
@@ -18,13 +17,6 @@ client.on('qr', qr => {
     console.log('Scan QR code with your WhatsApp.');
 });
 
-async function getGroupIdByName(name) {
-    const chats = await client.getChats();
-    const group = chats.find(c => c.isGroup && c.name === name);
-    if (group) return group.id._serialized;
-    console.error(`Group "${name}" not found!`);
-    return null;
-}
 
 function formatNumber(number) {
     if (number.includes('@c.us') || number.includes('@g.us')) return number;
@@ -60,39 +52,20 @@ async function sendImage(target, imagePath, caption = '') {
     }
 }
 
-function loadContactsFromCSV(filePath) {
+
+function loadTargetsFromCSV(filePath){
     return new Promise((resolve, reject) => {
-        const phones = [];
+        const results = [];
 
-        fs.createReadStream(filePath)
-            .pipe(csv({ headers: ['contactNo', 'name'], skipLines: 1 }))
-            .on('data', (row) => {
-                if (row.contactNo && row.contactNo.trim() !== '') {
-                    phones.push(row.contactNo.trim());
-                }
-            })
-            .on('end', () => {
-                resolve(phones);
-            })
-            .on('error', reject);
-    });
-}
-
-function loadGroupsFromCSV(filePath) {
-    return new Promise((resolve, reject) => {
-        const groups = [];
-
-        fs.createReadStream(filePath)
-            .pipe(csv({ headers: ['groupName'], skipLines: 1 }))
-            .on('data', (row) => {
-                if (row.groupName && row.groupName.trim() !== '') {
-                    groups.push(row.groupName);
-                }
-            })
-            .on('end', () => {
-                resolve(groups);
-            })
-            .on('error', reject);
+        fs.createReadStream(filePath) 
+        .pipe(csv())
+        .on("data", (row) => {
+            results.push(row.ID);
+        })
+        .on("end", () => {
+            resolve(results); 
+        })
+        .on("error", reject);
     });
 }
 client.on('ready', async () => {
@@ -103,18 +76,8 @@ client.on('ready', async () => {
     clientReady = true;
     console.log('Client is now fully ready.');
 
-    const phoneNumbers = await loadContactsFromCSV('data/individuals.csv');
-    console.log('Phone numbers loaded:', phoneNumbers);
+    const targets = await loadTargetsFromCSV('data/chats.csv');
 
-    const groupNames = await loadGroupsFromCSV('data/groups.csv');
-    console.log('Group names loaded:', groupNames);
-
-    const targets = [...phoneNumbers];
-
-    for (const groupName of groupNames) {
-        const groupId = await getGroupIdByName(groupName);
-        if (groupId) targets.push(groupId);
-    }
     console.log('All targets:', targets);
 
     for (const target of targets) {
