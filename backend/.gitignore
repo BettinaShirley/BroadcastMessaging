@@ -1,10 +1,7 @@
-PyWhatKit_DB.txt
 node_modules
-venv
 .wwebjs*
 .env
 image*
-uploads/*
 /images*
 /data*
 .DS_Store
