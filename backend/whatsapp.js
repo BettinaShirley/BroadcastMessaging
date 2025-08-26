@@ -60,8 +60,10 @@ function loadTargetsFromCSV(filePath){
         fs.createReadStream(filePath) 
         .pipe(csv())
         .on("data", (row) => {
+            if (row.IsSend.trim().toLowerCase() === 'true'){
             results.push(row.ID);
-        })
+        }    
+    })
         .on("end", () => {
             resolve(results); 
         })
