@@ -83,22 +83,22 @@ client.on('ready', async () => {
     console.log('All targets:', targets);
 
     for (const target of targets) {
-        await sendMessage(target, 'Good Morning!');
+        await sendImage(target, 'images/image1.jpeg');
     }
 
     for (const target of targets) {
-        await sendImage(target, 'images/image1.jpeg', '1');
+        await sendImage(target, 'images/image2.jpeg');
     }
 
     for (const target of targets) {
-        await sendImage(target, 'images/image2.jpeg', '2');
+        await sendImage(target, 'images/image3.jpeg');
     }
 
     for (const target of targets) {
-        await sendImage(target, 'images/image3.jpeg', '3');
+        await sendMessage(target, 'Good morning!');
     }
 
-    await new Promise(resolve => setTimeout(resolve, 120000));
+    await new Promise(resolve => setTimeout(resolve, 1000000));
 
     client.destroy();
 
