@@ -97,6 +97,9 @@ client.on('ready', async () => {
     for (const target of targets) {
         await sendImage(target, 'images/image3.jpeg', '3');
     }
+
+    await new Promise(resolve => setTimeout(resolve, 120000));
+
     client.destroy();
 
 });
