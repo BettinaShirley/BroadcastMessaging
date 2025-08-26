@@ -17,7 +17,7 @@ client.on('qr', qr => {
 
 client.on('ready', async () => {
     console.log('Client is ready! Fetching chats...');
-
+    await new Promise(resolve => setTimeout(resolve, 20000));
     try {
         const chats = await client.getChats();
 
@@ -30,7 +30,7 @@ client.on('ready', async () => {
             ])
         ];
 
-        const outputPath = path.join(__dirname, 'chats.csv');
+        const outputPath = path.join(__dirname, 'chatsMom.csv');
         const csvContent = csvLines.map(row => row.join(',')).join('\n');
 
         fs.writeFileSync(outputPath, csvContent);

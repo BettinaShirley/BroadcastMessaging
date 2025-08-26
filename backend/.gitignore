@@ -8,4 +8,3 @@ uploads/*
 /images*
 /data*
 .DS_Store
-chats.csv
