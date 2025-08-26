@@ -1,5 +1,6 @@
-<script setup>
+ap<script setup>
 import { ref } from 'vue';
+import Starfield from './components/Starfield.vue';
 
 const files = ref([]);
 const uploadStatus = ref('');
@@ -40,7 +41,6 @@ const startUpload = async () => {
     if (response.ok) {
       uploadStatus.value = 'Files uploaded successfully! Starting WhatsApp broadcast...';
       
-      // Trigger WhatsApp backend after successful upload
       const whatsappResponse = await fetch('http://localhost:3001/api/send-broadcast', {
         method: 'POST',
       });
@@ -64,6 +64,7 @@ const startUpload = async () => {
 </script>
 
 <template>
+  <Starfield />
   <div class="container">
     <h1>WhatsApp Broadcast Messenger</h1>
     <div class="upload-section">
@@ -84,21 +85,31 @@ const startUpload = async () => {
 <style scoped>
 .container {
   max-width: 600px;
-  margin: 0 auto;
   padding: 20px;
   font-family: Arial, sans-serif;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 1;
+  background-color: rgba(255, 255, 255, 0.1);
+  border-radius: 8px;
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  color: white;
 }
 
 .upload-section {
   margin-bottom: 20px;
   padding: 20px;
-  border: 2px dashed #ccc;
+  border: 2px dashed rgba(255, 255, 255, 0.3);
   border-radius: 8px;
   text-align: center;
+  background-color: rgba(255, 255, 255, 0.05);
 }
 
 .status {
-  color: #666;
+  color: rgba(255, 255, 255, 0.8);
   font-style: italic;
   margin: 10px 0;
 }
@@ -119,13 +130,15 @@ button:disabled {
 }
 
 .file-list {
-  background-color: #f9f9f9;
+  background-color: rgba(255, 255, 255, 0.05);
   padding: 15px;
   border-radius: 4px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
 }
 
 .file-list h3 {
   margin-top: 0;
+  color: white;
 }
 
 .file-list ul {
