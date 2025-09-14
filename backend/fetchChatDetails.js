@@ -30,7 +30,7 @@ client.on('ready', async () => {
             ])
         ];
 
-        const outputPath = path.join(__dirname, 'chats.csv');
+        const outputPath = path.join(__dirname, 'data', 'chats.csv');
         const csvContent = csvLines.map(row => row.join(',')).join('\n');
 
         fs.writeFileSync(outputPath, csvContent);
