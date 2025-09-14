@@ -22,11 +22,12 @@ client.on('ready', async () => {
         const chats = await client.getChats();
 
         const csvLines = [
-            ['Name', 'ID', 'IsGroup'],
+            ['Name', 'ID', 'IsGroup', 'IsSend'],
             ...chats.map(chat => [
                 `"${chat.name || ''}"`,
                 `"${chat.id._serialized}"`,
-                chat.isGroup
+                chat.isGroup,
+                'FALSE'
             ])
         ];
 
