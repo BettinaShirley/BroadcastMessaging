@@ -2,12 +2,16 @@ const { Client, LocalAuth, MessageMedia } = require('whatsapp-web.js');
 const qrcode = require('qrcode-terminal');
 const fs = require('fs');
 const csv = require('csv-parser');
+const { exec } = require('child_process');
 
 let clientReady = false;
 
 const client = new Client({
     authStrategy: new LocalAuth(),
-    puppeteer: { headless: false },
+    puppeteer: { 
+        headless: false,
+        executablePath: '/Applications/Google Chrome.app/Contents/MacOS/Google Chrome'
+    },
 });
 
 client.initialize();
@@ -98,9 +102,17 @@ client.on('ready', async () => {
         await sendMessage(target, 'Blessed morning!');
     }
 
-    await new Promise(resolve => setTimeout(resolve, 1000000));
+    await new Promise(resolve => setTimeout(resolve, 600000));
 
     client.destroy();
+
+    exec("lsof -ti :3001 | xargs kill -9 2>/dev/null && lsof -ti :5173 | xargs kill -9 2>/dev/null", (error, stdout, stderr) => {
+    if (error) {
+        console.error(`Error killing processes: ${error.message}`);
+        return;
+    }
+    console.log("Successfully killed processes on ports 3001 and 5173");
+    });
 
 });
 
