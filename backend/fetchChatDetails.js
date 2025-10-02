@@ -22,15 +22,16 @@ client.on('ready', async () => {
         const chats = await client.getChats();
 
         const csvLines = [
-            ['Name', 'ID', 'IsGroup'],
+            ['Name', 'ID', 'IsGroup', 'IsSend'],
             ...chats.map(chat => [
                 `"${chat.name || ''}"`,
                 `"${chat.id._serialized}"`,
-                chat.isGroup
+                chat.isGroup,
+                'FALSE'
             ])
         ];
 
-        const outputPath = path.join(__dirname, 'chatsMom.csv');
+        const outputPath = path.join(__dirname, 'data', 'chats.csv');
         const csvContent = csvLines.map(row => row.join(',')).join('\n');
 
         fs.writeFileSync(outputPath, csvContent);
