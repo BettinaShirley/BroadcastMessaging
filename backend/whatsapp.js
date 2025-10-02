@@ -99,10 +99,10 @@ client.on('ready', async () => {
     }
 
     for (const target of targets) {
-        await sendMessage(target, 'Blessed morning!');
+        await sendMessage(target, 'Blessed Morning!');
     }
 
-    await new Promise(resolve => setTimeout(resolve, 600000));
+    await new Promise(resolve => setTimeout(resolve, 1200000));
 
     client.destroy();
 
