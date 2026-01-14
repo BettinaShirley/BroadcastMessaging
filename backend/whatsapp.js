@@ -82,7 +82,7 @@ client.on('ready', async () => {
     clientReady = true;
     console.log('Client is now fully ready.');
 
-    const targets = await loadTargetsFromCSV('data/chatsTest.csv');
+    const targets = await loadTargetsFromCSV('data/chats.csv');
 
     // Shuffle the targets randomly
     for (let i = targets.length - 1; i > 0; i--) {
@@ -107,6 +107,8 @@ client.on('ready', async () => {
     for (const target of targets) {
         await sendMessage(target, 'Blessed Day!');
     }
+
+    console.log("Task completed !");
 
     await new Promise(resolve => setTimeout(resolve, 1200000));
 
