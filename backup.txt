@@ -34,7 +34,7 @@ async function sendMessage(target, text) {
     }
     const chatId = formatNumber(target);
     try {
-        await client.sendMessage(chatId, text,{ sendSeen: false });
+        await client.sendMessage(chatId, text);
         console.log(`Text message sent to ${target}`);
     } catch (err) {
         console.error('Error sending text:', err);
@@ -49,7 +49,7 @@ async function sendImage(target, imagePath, caption = '') {
     const chatId = formatNumber(target);
     try {
         const media = MessageMedia.fromFilePath(imagePath);
-        await client.sendMessage(chatId, media, { caption: caption, sendSeen: false});
+        await client.sendMessage(chatId, media, { caption });
         console.log(`Image sent to ${target}`);
     } catch (err) {
         console.error('Error sending image:', err);
@@ -82,7 +82,7 @@ client.on('ready', async () => {
     clientReady = true;
     console.log('Client is now fully ready.');
 
-    const targets = await loadTargetsFromCSV('data/chatsTest.csv');
+    const targets = await loadTargetsFromCSV('data/chats.csv');
 
     // Shuffle the targets randomly
     for (let i = targets.length - 1; i > 0; i--) {
@@ -94,21 +94,17 @@ client.on('ready', async () => {
 
     for (const target of targets) {
         await sendImage(target, 'images/image1.jpeg');
-    }
-
-    for (const target of targets) {
         await sendImage(target, 'images/image2.jpeg');
-    }
-
-    for (const target of targets) {
         await sendImage(target, 'images/image3.jpeg');
-    }
+        await sendMessage(target, 'Blessed morning!');
+        const minMs = 0.25 * 60 * 1000;
+        const maxMs = 1 * 60 * 1000;
+        const randomDelay = Math.floor(Math.random() * (maxMs - minMs + 1)) + minMs;
+        console.log(`Waiting ${Math.round(randomDelay / 1000)} seconds before next target...`);
+        await new Promise(resolve => setTimeout(resolve, randomDelay));
+   }
 
-    for (const target of targets) {
-        await sendMessage(target, 'Blessed Day!');
-    }
-
-    await new Promise(resolve => setTimeout(resolve, 1200000));
+    await new Promise(resolve => setTimeout(resolve, 5000000));
 
     client.destroy();
 
